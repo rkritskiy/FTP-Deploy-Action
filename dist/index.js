@@ -3164,7 +3164,18 @@ class FTPSyncProvider {
             const absoluteFolderPath = "/" + (this.serverPath.startsWith("./") ? this.serverPath.replace("./", "") : this.serverPath) + folderPath;
             this.logger.all(`removing folder "${absoluteFolderPath}"`);
             if (this.dryRun === false) {
-                yield utilities_1.retryRequest(this.logger, () => __awaiter(this, void 0, void 0, function* () { return yield this.client.removeDir(absoluteFolderPath); }));
+                try {
+                    yield utilities_1.retryRequest(this.logger, () => __awaiter(this, void 0, void 0, function* () { return yield this.client.removeDir(absoluteFolderPath); }));
+                }
+                catch (e) {
+                    // this error is common when a file was deleted on the server directly
+                    if (e.code === types_1.ErrorCode.FileNotFoundOrNoAccess) {
+                        this.logger.standard("Folder not found or you don't have access to the folder - skipping...");
+                    }
+                    else {
+                        throw e;
+                    }
+                }
             }
             this.logger.verbose(`  completed`);
         });
@@ -7888,8 +7899,7 @@ async function runDeployment() {
         await (0, ftp_deploy_1.deploy)(args);
     }
     catch (error) {
-        console.log(error);
-        // core.setFailed(error);
+        core.setFailed(error);
     }
 }
 runDeployment();
@@ -8098,7 +8108,7 @@ module.exports = require("util");
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
-/******/ 	
+/******/
 /******/ 	// The require function
 /******/ 	function __nccwpck_require__(moduleId) {
 /******/ 		// Check if module is in cache
@@ -8112,7 +8122,7 @@ module.exports = require("util");
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
-/******/ 	
+/******/
 /******/ 		// Execute the module function
 /******/ 		var threw = true;
 /******/ 		try {
@@ -8121,23 +8131,23 @@ module.exports = require("util");
 /******/ 		} finally {
 /******/ 			if(threw) delete __webpack_module_cache__[moduleId];
 /******/ 		}
-/******/ 	
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/ 	
+/******/
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat */
-/******/ 	
+/******/
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
-/******/ 	
+/******/
 /************************************************************************/
-/******/ 	
+/******/
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
 /******/ 	var __webpack_exports__ = __nccwpck_require__(399);
 /******/ 	module.exports = __webpack_exports__;
-/******/ 	
+/******/
 /******/ })()
 ;
