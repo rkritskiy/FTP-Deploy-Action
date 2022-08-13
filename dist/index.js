@@ -7888,7 +7888,8 @@ async function runDeployment() {
         await (0, ftp_deploy_1.deploy)(args);
     }
     catch (error) {
-        core.setFailed(error);
+        console.log(error);
+        // core.setFailed(error);
     }
 }
 runDeployment();

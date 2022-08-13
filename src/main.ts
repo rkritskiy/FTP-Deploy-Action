@@ -24,7 +24,8 @@ async function runDeployment() {
     await deploy(args);
   }
   catch (error: any) {
-    core.setFailed(error);
+    console.log(error)
+    // core.setFailed(error);
   }
 }
 
